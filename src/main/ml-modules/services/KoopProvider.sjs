@@ -355,6 +355,44 @@ function queryClassificationValues(req) {
   return result;
 }
 
+function parseTime(query,layerModel)
+{
+  //Time instant or time extent passed to the query 
+  //const time = "1230768000000"
+  //const time = "1199145600000,1230768000000"
+  //const time = "null,1230768000000"
+  //const time = "1199145600000,null"
+
+      console.log("=====================TimeQuery=============================")
+      const timeValue = fn.string(query.time);
+      console.log("timeValue : " +timeValue) ;
+ 
+      if ( timeValue === "0" ) {   throw "Provide valid input for time parameter" }
+      
+      const parts = timeValue.split(",");
+      console.log("timeValue.length : " +timeValue.length);
+      let timeQuery = null ;
+
+      const timeField = layerModel.timeField ;
+      const queryParts = [];
+
+    if (parts.length === 1) {
+      // a point in time
+      queryParts.push(cts.jsonPropertyRangeQuery(timeField, "=", new Date(parseInt(parts[0]))))
+    } else if (parts.length === 2) {
+      if (parts[0] !== "null") {
+        queryParts.push(cts.jsonPropertyRangeQuery(timeField, ">=", new Date(parseInt(parts[0]))))  
+      }
+      if (parts[1] !== "null") {
+        queryParts.push(cts.jsonPropertyRangeQuery(timeField, "<=", new Date(parseInt(parts[1]))))  
+      }  
+    }
+    
+    timeQuery = cts.andQuery(queryParts)
+    console.log("timeQuery : " +timeQuery )
+    return timeQuery
+}
+
 
 function parseWhere(query) {
   // Any legal SQL where clause operating on the fields in the layer is allowed
@@ -599,11 +637,17 @@ function parseGroupByFields(query) {
 function getObjects(req) {
   const layerModel = getLayerModel(req.params.id, req.params.layer);
 
+  console.log("=================getObjects=====================")
   const query = req.query;
   const orderByFields = parseOrderByFields(query);
   const geoQuery = parseGeometry(query);
   const whereQuery = parseWhere(query);
 
+  console.log("query.time : " +query.time);
+
+  const timeQuery = (!query.time) ?  cts.trueQuery() : parseTime(query, layerModel);
+
+  console.log("timeQuery : " +timeQuery)
   let outFields = null;
   if (query.returnIdsOnly) {
     outFields = [ "OBJECTID" ];
@@ -619,6 +663,8 @@ function getObjects(req) {
   if (layerModel.boundingQuery) {
     boundingQueries.push(cts.query(layerModel.boundingQuery));
   }
+
+  boundingQueries.push(timeQuery);
 
   // TODO: look into how to deal with object ids more generally
   // we could also look into putting the ids into a "literal" row set and joining via optic
@@ -692,6 +738,7 @@ function aggregate(req) {
   const orderByFields = parseOrderByFields(query);
 
   const geoQuery = parseGeometry(query);
+  const timeQuery = (!query.time) ?  cts.trueQuery() : parseTime(query, layerModel);
 
   const boundingQueries = [ geoQuery ];
 
@@ -699,6 +746,8 @@ function aggregate(req) {
   if (layerModel.boundingQuery) {
     boundingQueries.push(cts.query(layerModel.boundingQuery));
   }
+
+  boundingQueries.push(timeQuery);
 
   const boundingQuery = cts.andQuery(boundingQueries);
   console.log("bounding query: " + xdmp.toJsonString(boundingQuery));

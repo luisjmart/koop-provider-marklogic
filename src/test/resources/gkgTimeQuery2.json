@@ -1,0 +1,12 @@
+{
+    "params" : {
+      "id" : "GDeltGKG",
+      "layer" : 0,
+      "method" : "query"
+    },
+    "query" : {
+      "returnCountOnly" : true,
+      "time" : 1495609200000
+    }
+  }
+  

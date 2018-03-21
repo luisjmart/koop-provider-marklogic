@@ -1,6 +1,18 @@
 {
   "database-name" : "%%DATABASE%%",
   "schema-database": "%%SCHEMAS_DATABASE%%",
+
+  "range-element-index" : [
+    {
+      "scalar-type" : "dateTime",
+      "namespace-uri" : "",
+      "localname" : "urlpubtimedate",
+      "range-value-positions": false,
+      "collation" : "",
+      "invalid-values": "reject"
+    }
+  ],
+
   "geospatial-path-index": [
     {
       "path-expression": "\/\/geometry[type = \"MultiPoint\"]\/\/array-node(\"coordinates\")",
