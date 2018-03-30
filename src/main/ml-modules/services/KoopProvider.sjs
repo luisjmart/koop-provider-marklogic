@@ -363,17 +363,15 @@ function parseTime(query,layerModel)
   //const time = "null,1230768000000"
   //const time = "1199145600000,null"
 
-      console.log("=====================TimeQuery=============================")
       const timeValue = fn.string(query.time);
       console.log("timeValue : " +timeValue) ;
- 
+
       if ( timeValue === "0" ) {   throw "Provide valid input for time parameter" }
       
       const parts = timeValue.split(",");
-      console.log("timeValue.length : " +timeValue.length);
       let timeQuery = null ;
-
-      const timeField = layerModel.timeField ;
+      const timeInfo = layerModel.timeInfo;
+      const timeField = timeInfo.startTimeField ;
       const queryParts = [];
 
     if (parts.length === 1) {
@@ -389,7 +387,6 @@ function parseTime(query,layerModel)
     }
     
     timeQuery = cts.andQuery(queryParts)
-    console.log("timeQuery : " +timeQuery )
     return timeQuery
 }
 

@@ -98,6 +98,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .body("fields.size()", is(9))
                 .body("fields.name", hasItems("OBJECTID", "urlpubtimedate", "urlpubdate", "url", "name", "urltone", "domain", "urllangcode", "geores"))                
                 .body("hasStaticData", is(true))
+                .body("timeInfo",notNullValue())
             ;
 
       // we should probably add more validation here or just add new tests if there are
@@ -120,6 +121,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                 .log().ifValidationFails()
                 .body("layers.size()", is(4))
                 .body("layers.name", hasItems("GKG level 1", "GKG level 2", "GKG level 3","GKG level 4"))
+                .body("layers.timeInfo",notNullValue())
             ;
 
       // we should probably add more validation here or just add new tests if there are

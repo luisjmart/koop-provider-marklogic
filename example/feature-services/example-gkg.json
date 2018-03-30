@@ -24,7 +24,18 @@
         }
       },
       "view" : "Article",
-      "timeField" : "urlpubtimedate",
+      "timeInfo" : {
+          "startTimeField" : "urlpubtimedate",
+          "endTimeField" : "urlpubtimedate",
+          "trackIdField" : null,
+          "timeExtent" : [null, null],
+          "timeReference" : {
+            "timeZone" : "UTC",
+            "respectsDaylightSaving" : false
+        },
+          "timeInterval" : 0,
+          "timeIntervalUnits" : "esriTimeUnitsSeconds"
+        },
       "boundingQuery" : {
         "jsonPropertyValueQuery" : {
           "property" : ["geores"], "value" : [ 1 ],
@@ -51,7 +62,18 @@
         }
       },
       "view" : "Article",
-      "timeField" : "urlpubtimedate",
+      "timeInfo" : {
+        "startTimeField" : "urlpubtimedate",
+        "endTimeField" : "urlpubtimedate",
+        "trackIdField" : null,
+        "timeExtent" : [null, null],
+        "timeReference" : {
+          "timeZone" : "UTC",
+          "respectsDaylightSaving" : false
+      },
+        "timeInterval" : 0,
+        "timeIntervalUnits" : "esriTimeUnitsSeconds"
+      },
       "boundingQuery" : {
         "jsonPropertyValueQuery" : {
           "property" : ["geores"], "value" : [ 2 ],
@@ -78,7 +100,18 @@
         }
       },
       "view" : "Article",
-      "timeField" : "urlpubtimedate",
+      "timeInfo" : {
+        "startTimeField" : "urlpubtimedate",
+        "endTimeField" : "urlpubtimedate",
+        "trackIdField" : null,
+        "timeExtent" : [null, null],
+        "timeReference" : {
+          "timeZone" : "UTC",
+          "respectsDaylightSaving" : false
+      },
+        "timeInterval" : 0,
+        "timeIntervalUnits" : "esriTimeUnitsSeconds"
+      },    
       "boundingQuery" : {
         "jsonPropertyValueQuery" : {
           "property" : ["geores"], "value" : [ 3 ],
@@ -105,8 +138,19 @@
         }
       },
       "view" : "Region",
-      "timeField" : "urlpubtimedate",
-      "boundingQuery" : {
+      "timeInfo" : {
+        "startTimeField" : "urlpubtimedate",
+        "endTimeField" : "urlpubtimedate",
+        "trackIdField" : null,
+        "timeExtent" : [null, null],
+        "timeReference" : {
+          "timeZone" : "UTC",
+          "respectsDaylightSaving" : false
+      },
+        "timeInterval" : 0,
+        "timeIntervalUnits" : "esriTimeUnitsSeconds"
+      },
+    "boundingQuery" : {
         "jsonPropertyValueQuery" : {
           "property" : ["geores"], "value" : [ 4 ],
           "options" : ["lang=en"], "weight" : 0
