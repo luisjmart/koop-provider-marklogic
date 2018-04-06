@@ -221,6 +221,8 @@ function getFieldType(datatype) {
 
 function query(req) {
   // always return a FeatureCollection for now
+
+  console.log("request :" +JSON.stringify(req))
   const geojson = {
     type : 'FeatureCollection',
     metadata : {

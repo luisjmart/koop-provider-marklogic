@@ -27,8 +27,8 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(9))
-                .body("features.attributes.name", hasItems("MarkLogic HQ","Museum","Restaurant","Shopping Center","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
+                .body("features.size()", is(4))
+                .body("features.attributes.name", hasItems("Shopping Center","MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
             ;
 	}
 	
@@ -50,8 +50,8 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(6))
-                .body("features.attributes.name", hasItems("Museum","MarkLogic Neighborhood", "Wildlife Refuge","Airport","Hwy 101","Holly St"))
+                .body("features.size()", is(3))
+                .body("features.attributes.name", hasItems("MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
             ; 
 	}	
 	
@@ -96,32 +96,8 @@ public class EnvelopeQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(4))
-                .body("features.attributes.name", hasItems("MarkLogic HQ","MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
-            ; 
-	}
-
-	//testEnvelopeAroundPointIntersects
-	@Test
-    public void testEnvelopeIntersects5() {
-
-        String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
-    	RestAssured.urlEncodingEnabled = false;
- 	
-        RestAssured
-            .given()
-            	.pathParam("layer", 3)
-            	.pathParam("geometryType", "esriGeometryEnvelope")
-            	.pathParam("geometry", "-122.2581983,37.5128407,-122.2581983,37.5128407")
-            .when()
-                .log().uri()
-                .get(path)
-            .then()
-                .log().ifError()
-                .statusCode(200)
-                .body("features.size()", is(2))
-                .body("features.attributes.name", hasItems("Restaurant","MarkLogic Neighborhood"))
-
+                .body("features.size()", is(3))
+                .body("features.attributes.name", hasItems("MarkLogic Neighborhood", "Wildlife Refuge","Airport"))
             ; 
 	}
 	

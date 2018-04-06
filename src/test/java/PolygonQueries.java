@@ -53,8 +53,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(2))
-                .body("features.attributes.name", hasItems("Holly St","MarkLogic Neighborhood"))            ;
+                .body("features.size()", is(1))
+                .body("features.attributes.name", hasItems("MarkLogic Neighborhood"))            ;
 		}
 	
 	//testSinglePolygonLineStringIntersects2 Expected : Holly ST(LineString) , Airport (Polygon)
@@ -76,8 +76,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(3))
-                .body("features.attributes.name", hasItems("Airport","Holly St","MarkLogic Neighborhood"))            ;                       
+                .body("features.size()", is(2))
+                .body("features.attributes.name", hasItems("Airport","MarkLogic Neighborhood"))            ;                       
                 
 		}
 	
@@ -100,8 +100,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(3))
-                .body("features.attributes.name", hasItems("Hwy 101","Holly St","MarkLogic Neighborhood"))     
+                .body("features.size()", is(1))
+                .body("features.attributes.name", hasItems("MarkLogic Neighborhood"))     
             ;
 		}
 
@@ -171,8 +171,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(2))
-                .body("features.attributes.name", hasItems("Restaurant","MarkLogic Neighborhood"))            ;                                                       
+                .body("features.size()", is(1))
+                .body("features.attributes.name", hasItems("MarkLogic Neighborhood"))            ;                                                       
 		}
 
     //================================Within=======================================
@@ -197,8 +197,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(1))
-                .body("features[0].attributes.name", is("Restaurant"))            ;                                                       
+                .body("features.size()", is(0))
+                         ;                                                       
 		}
 	
 	
@@ -246,8 +246,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(6))
-                .body("features.attributes.name", hasItems("MarkLogic Neighborhood","Restaurant","Holly St","Airport","Museum","MarkLogic HQ"))            ;                                                       
+                .body("features.size()", is(2))
+                .body("features.attributes.name", hasItems("MarkLogic Neighborhood","Airport"))            ;                                                       
                 ;                                                       
 		}
 	
@@ -448,9 +448,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			            .then()
 			                .log().ifError()
 			                .statusCode(200)
-			                .body("features.size()", is(1))
-			                .body("features[0].attributes.name", is("Hwy 101"))
-			                ;                                                       
+			                .body("features.size()", is(0))			                ;                                                       
 					}					
 				
 				// Reverse test ( Intersecting )

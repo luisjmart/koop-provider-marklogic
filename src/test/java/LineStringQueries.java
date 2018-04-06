@@ -11,7 +11,7 @@ import io.restassured.RestAssured;
 
 public class LineStringQueries extends AbstractFeatureServiceTest{
 
-	//Crosses Single line Expected : Holly St
+	//Crosses Single line Expected : No features
 	@Test
     public void testLineStringCrosses1() throws UnsupportedEncodingException, ParseException  {
 
@@ -31,12 +31,11 @@ public class LineStringQueries extends AbstractFeatureServiceTest{
             .then()
                 .log().ifError()
                 .statusCode(200)
-                .body("features.size()", is(1))
-                .body("features[0].attributes.name", is("Holly St"))
+                .body("features.size()", is(0))
                 ;                                                       
 		}
 	
-	//Crosses Double line = Expected : WildLife refuge
+	//Crosses Double line = Expected : No features
 		@Test
 	    public void testLineStringCrosses2() throws UnsupportedEncodingException, ParseException  {
 
@@ -56,12 +55,11 @@ public class LineStringQueries extends AbstractFeatureServiceTest{
 	            .then()
 	                .log().ifError()
 	                .statusCode(200)
-	                .body("features.size()", is(2))
-	                .body("features.attributes.name", hasItems("Hwy 101","Holly St"));
+	                .body("features.size()", is(0))
 	                ;                                                       
 			}
 		
-		//Crosses Lines and Polygons = Expected : 6 features
+		//Crosses Lines and Polygons = Expected : 4 features ( regions )
 				@Test
 			    public void testLineStringCrosses3() throws UnsupportedEncodingException, ParseException  {
 
@@ -81,8 +79,8 @@ public class LineStringQueries extends AbstractFeatureServiceTest{
 			            .then()
 			                .log().ifError()
 			                .statusCode(200)
-			                .body("features.size()", is(6))    
-			                .body("features.attributes.name", hasItems("MarkLogic Neighborhood","Shopping Center","Wildlife Refuge","Hwy 101","Holly St","Airport"))            ;                                                       			             
+			                .body("features.size()", is(4))    
+			                .body("features.attributes.name", hasItems("MarkLogic Neighborhood","Shopping Center","Wildlife Refuge","Airport"))            ;                                                       			             
 			                ;                                                       
 					}
 				
@@ -161,7 +159,7 @@ public class LineStringQueries extends AbstractFeatureServiceTest{
 			                ;                                                       
 					}
 				
-				//Intersect Multiple Polygons and LineString = Expected : 4 features
+				//Intersect Multiple Polygons and LineString = Expected : 3 features
 				@Test
 			    public void testLineStringIntersect3() throws UnsupportedEncodingException, ParseException  {
 
@@ -180,8 +178,8 @@ public class LineStringQueries extends AbstractFeatureServiceTest{
 			            .then()
 			                .log().ifError()
 			                .statusCode(200)
-			                .body("features.size()", is(4))
-			                .body("features.attributes.name", hasItems("Airport","Wildlife Refuge","MarkLogic Neighborhood","Hwy 101"));
+			                .body("features.size()", is(3))
+			                .body("features.attributes.name", hasItems("Airport","Wildlife Refuge","MarkLogic Neighborhood"))
 			                ;                                                       
 					}
 				
