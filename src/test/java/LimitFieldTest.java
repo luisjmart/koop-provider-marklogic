@@ -34,15 +34,11 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
             .body("fields[0].type", is("esriFieldTypeOID"))
             .body("fields[0].alias", is("OBJECTID"))
             .body("fields[0].length", IsNull.nullValue())
-            .body("fields[0].editable", is(false))
-            .body("fields[0].nullable", is(true))
             .body("fields[0].domain", IsNull.nullValue())
             .body("fields[2].name", is("domain"))
             .body("fields[2].type", is("esriFieldTypeString"))
             .body("fields[2].alias", is("domain"))
-            .body("fields[2].length", IsNull.nullValue())
-            .body("fields[2].editable", is(false))
-            .body("fields[2].nullable", is(true))
+            .body("fields[2].length", IsNull.notNullValue())
             .body("fields[2].domain", IsNull.nullValue())
 
             .body("features.size()", is(20))
@@ -59,7 +55,7 @@ public class LimitFieldTest extends AbstractFeatureServiceTest{
             .body("features[19].geometry.x", is(22))
             .body("features[19].geometry.y", is(39))
 
-            .body("exceededTransferLimit", is(false))
+            .body("exceededTransferLimit", is(true))
         ;
     }
 

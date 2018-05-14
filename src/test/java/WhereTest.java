@@ -92,15 +92,11 @@ public class WhereTest extends AbstractFeatureServiceTest{
                 .body("fields[0].type", is("esriFieldTypeOID"))
                 .body("fields[0].alias", is("OBJECTID"))
                 .body("fields[0].length", IsNull.nullValue())
-                .body("fields[0].editable", is(false))
-                .body("fields[0].nullable", is(true))
                 .body("fields[0].domain", IsNull.nullValue())
                 .body("fields[8].name", is("geores"))
                 .body("fields[8].type", is("esriFieldTypeInteger"))
                 .body("fields[8].alias", is("geores"))
                 .body("fields[8].length", IsNull.nullValue())
-                .body("fields[8].editable", is(false))
-                .body("fields[8].nullable", is(true))
                 .body("fields[8].domain", IsNull.nullValue())
 
                 .body("features.size()", is(2))
@@ -171,25 +167,14 @@ public class WhereTest extends AbstractFeatureServiceTest{
 
             .body("spatialReference.wkid", is(4326))
 
-            .body("fields.size()", is(2))
-            .body("fields.name", hasItems("OBJECTID", "urlpubtimedate"))
+            .body("fields.size()", is(1))
+            .body("fields.name", hasItems("urlpubtimedate"))
             .body("fields[0].name", is("urlpubtimedate"))
             .body("fields[0].type", is("esriFieldTypeDate"))
             .body("fields[0].alias", is("urlpubtimedate"))
-            .body("fields[0].length", IsNull.nullValue())
-            .body("fields[0].editable", is(false))
-            .body("fields[0].nullable", is(true))
+            .body("fields[0].length", IsNull.notNullValue())
             .body("fields[0].domain", IsNull.nullValue())
-            .body("fields[1].name", is("OBJECTID"))
-            .body("fields[1].type", is("esriFieldTypeOID"))
-            .body("fields[1].alias", is("ID"))
-            .body("fields[1].length", IsNull.nullValue())
-            .body("fields[1].editable", is(false))
-            .body("fields[1].nullable", is(false))
-            .body("fields[1].domain", IsNull.nullValue())
-
-            .body("features.size()", is(2000))
-
+            .body("features.size()", is(5000))
             .body("exceededTransferLimit", is(true))
         ;
     }

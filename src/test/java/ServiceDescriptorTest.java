@@ -97,7 +97,7 @@ public class ServiceDescriptorTest extends AbstractFeatureServiceTest {
                            
                 .body("fields.size()", is(9))
                 .body("fields.name", hasItems("OBJECTID", "urlpubtimedate", "urlpubdate", "url", "name", "urltone", "domain", "urllangcode", "geores"))                
-                .body("hasStaticData", is(true))
+                .body("hasStaticData", is(false))
             ;
 
       // we should probably add more validation here or just add new tests if there are

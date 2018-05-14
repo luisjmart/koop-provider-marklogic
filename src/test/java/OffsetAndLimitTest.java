@@ -34,15 +34,11 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
             .body("fields[0].type", is("esriFieldTypeOID"))
             .body("fields[0].alias", is("OBJECTID"))
             .body("fields[0].length", IsNull.nullValue())
-            .body("fields[0].editable", is(false))
-            .body("fields[0].nullable", is(true))
             .body("fields[0].domain", IsNull.nullValue())
             .body("fields[8].name", is("geores"))
             .body("fields[8].type", is("esriFieldTypeInteger"))
             .body("fields[8].alias", is("geores"))
             .body("fields[8].length", IsNull.nullValue())
-            .body("fields[8].editable", is(false))
-            .body("fields[8].nullable", is(true))
             .body("fields[8].domain", IsNull.nullValue())
 
             .body("features.size()", is(10))
@@ -67,7 +63,7 @@ public class OffsetAndLimitTest extends AbstractFeatureServiceTest {
             .body("features[9].attributes.urllangcode", is("eng"))
             .body("features[9].attributes.geores", is(1))
 
-            .body("exceededTransferLimit", is(false))
+            .body("exceededTransferLimit", is(true))
         ;
     }
 
