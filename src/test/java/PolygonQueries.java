@@ -175,9 +175,144 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
                 .body("features.attributes.name", hasItems("MarkLogic Neighborhood"))            ;                                                       
 		}
 
+	@Test
+    public void testPolygonIntersects8() throws UnsupportedEncodingException, ParseException  {
+
+		String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
+		String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.23714828491211,37.50884073018052],[-122.23302841186523,37.50884073018052],[-122.23302841186523,37.51524053983815],[-122.23714828491211,37.51524053983815],[-122.23714828491211,37.50884073018052]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+		RestAssured.urlEncodingEnabled = false;
+ 		
+    	RestAssured
+            .given()
+            	.pathParam("layer", 4)
+            	.pathParam("geometryType", "esriGeometryPolygon")
+            	.pathParam("geometry",GeometryEncoded)
+            .when()
+                .log().uri()
+                .get(path)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .body("features.size()", is(1))
+                .body("features[0].attributes.name", is("Flyway"))
+            ;
+		}
+	
+	@Test
+    public void testPolygonIntersects9() throws UnsupportedEncodingException, ParseException  {
+
+		String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
+		String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.2529411315918,37.52313742082534],[-122.25697517395018,37.52225246712464],[-122.25646018981932,37.51871254735555],[-122.25199699401855,37.51782754117213],[-122.25096702575684,37.52191209752169],[-122.2529411315918,37.52313742082534]]],\"spatialReference\":{\"wkid\":4326 }}","UTF-8");
+		RestAssured.urlEncodingEnabled = false;
+ 		
+    	RestAssured
+            .given()
+            	.pathParam("layer", 4)
+            	.pathParam("geometryType", "esriGeometryPolygon")
+            	.pathParam("geometry",GeometryEncoded)
+            .when()
+                .log().uri()
+                .get(path)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .body("features.size()", is(1))
+                .body("features.attributes.name", hasItems("Holly St"))            ;
+		}
+	
+	@Test
+    public void testPolygonIntersects10() throws UnsupportedEncodingException, ParseException  {
+
+		String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
+		String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.25555896759033,37.51660213066696],[-122.25264072418213,37.51513841952452],[-122.25173950195311,37.51626173528878],[-122.25495815277098,37.51728291676527],[-122.25555896759033,37.51660213066696]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+		RestAssured.urlEncodingEnabled = false;
+ 		
+    	RestAssured
+            .given()
+            	.pathParam("layer", 4)
+            	.pathParam("geometryType", "esriGeometryPolygon")
+            	.pathParam("geometry",GeometryEncoded)
+            .when()
+                .log().uri()
+                .get(path)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .body("features.size()", is(1))
+                .body("features.attributes.name", hasItems("Holly St"));                                       
+		}
+	
+	@Test
+    public void testPolygonIntersects11() throws UnsupportedEncodingException, ParseException  {
+
+		String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
+		String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.25622415542603,37.514763977179],[-122.25680351257324,37.513844883456606],[-122.2561812400818,37.513283209498645],[-122.25500106811522,37.51410018840375],[-122.25622415542603,37.514763977179]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+		RestAssured.urlEncodingEnabled = false;
+ 		
+    	RestAssured
+            .given()
+            	.pathParam("layer", 4)
+            	.pathParam("geometryType", "esriGeometryPolygon")
+            	.pathParam("geometry",GeometryEncoded)
+            .when()
+                .log().uri()
+                .get(path)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .body("features.size()", is(2))
+                .body("features.attributes.name", hasItems("Hwy 101","Holly St"))     
+            ;
+		}
+
+	@Test
+    public void testPolygonIntersects12() throws UnsupportedEncodingException, ParseException  {
+
+		String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
+		String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.26568698883058,37.51358957763611],[-122.26609468460083,37.51243218029593],[-122.2649359703064,37.511768370781354],[-122.26360559463501,37.5128747166924],[-122.26568698883058,37.51358957763611]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+		RestAssured.urlEncodingEnabled = false;
+ 		
+    	RestAssured
+            .given()
+            	.pathParam("layer", 4)
+            	.pathParam("geometryType", "esriGeometryPolygon")
+            	.pathParam("geometry",GeometryEncoded)
+            .when()
+                .log().uri()
+                .get(path)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .body("features.size()", is(0))
+            ;
+		}
+	
+	@Test
+    public void testPolygonIntersects13() throws UnsupportedEncodingException, ParseException  {
+
+		String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}";
+		String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.26002216339111,37.512925778415465],[-122.2410535812378,37.512925778415465],[-122.2410535812378,37.51479801746984],[-122.26002216339111,37.51479801746984],[-122.26002216339111,37.512925778415465]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+		RestAssured.urlEncodingEnabled = false;
+ 		
+    	RestAssured
+            .given()
+            	.pathParam("layer", 4)
+            	.pathParam("geometryType", "esriGeometryPolygon")
+            	.pathParam("geometry",GeometryEncoded)
+            .when()
+                .log().uri()
+                .get(path)
+            .then()
+                .log().ifError()
+                .statusCode(200)
+                .body("features.size()", is(3))
+                .body("features.attributes.name", hasItems("Hwy 101","Flyway", "Holly St"))
+                ;
+		}
+
     //================================Within=======================================
 
-	//Polygon1 ( Features within Polygon )  Expected : Restaurant 
+	//Polygon1 ( Features within Polygon )  Expected : NULL 
 	@Test
     public void testPolygonWithin1() throws UnsupportedEncodingException, ParseException  {
 
@@ -271,7 +406,8 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 	            .then()
 	                .log().ifError()
 	                .statusCode(200)
-	                .body("features.size()", is(0))
+	                .body("features.size()", is(1))
+					.body("features.attributes.name", hasItems("Wildlife Refuge"))                                                     
 	                ;                                                       
 			}
 		
@@ -344,6 +480,78 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			                .log().ifError()
 			                .statusCode(200)
 			                .body("features.size()", is(0))			                ;                                                       
+					}
+
+				@Test
+				public void testPolygonWithin8() throws UnsupportedEncodingException, ParseException  {
+
+					String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}&spatialRel={spatialRel}";
+					String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.25903511047362,37.513998066529716],[-122.25912094116212,37.51290875784499],[-122.25779056549074,37.512534304312624],[-122.2571897506714,37.51358957763611],[-122.25903511047362,37.513998066529716]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+					RestAssured.urlEncodingEnabled = false;
+					
+					RestAssured
+						.given()
+							.pathParam("layer", 4)
+							.pathParam("geometryType", "esriGeometryPolygon")
+							.pathParam("geometry",GeometryEncoded)
+							.pathParam("spatialRel","esriSpatialRelWithin")
+						.when()
+							.log().uri()
+							.get(path)
+						.then()
+							.log().ifError()
+							.statusCode(200)
+							.body("features.size()", is(0))
+									;                                                       
+					}
+				
+				
+				@Test
+				public void testPolygonWithin9() throws UnsupportedEncodingException, ParseException  {
+
+					String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}&spatialRel={spatialRel}";
+					String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.27542877197264,37.48466628708502],[-122.22049713134766,37.48466628708502],[-122.22049713134766,37.5238862196042],[-122.27542877197264,37.5238862196042],[-122.27542877197264,37.48466628708502]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+					RestAssured.urlEncodingEnabled = false;
+					
+					RestAssured
+						.given()
+							.pathParam("layer", 4)
+							.pathParam("geometryType", "esriGeometryPolygon")
+							.pathParam("geometry",GeometryEncoded)
+							.pathParam("spatialRel","esriSpatialRelWithin")
+						.when()
+							.log().uri()
+							.get(path)
+						.then()
+							.log().ifError()
+							.statusCode(200)
+							.body("features.size()", is(3))
+                			.body("features.attributes.name", hasItems("Hwy 101","Flyway", "Holly St"));
+					}
+				
+				//Polygon3 ( Features within Polygon - Around MarkLogic NH)  Expected : 6 features 
+				@Test
+				public void testPolygonWithin10() throws UnsupportedEncodingException, ParseException  {
+
+					String path = "/marklogic/GDeltGKG/FeatureServer/{layer}/query?geometryType={geometryType}&geometry={geometry}&spatialRel={spatialRel}";
+					String GeometryEncoded = URLEncoder.encode("{\"rings\":[[[-122.2634554,37.519087],[-122.2633696,37.5134364],[-122.2598076,37.5061853],[-122.2455597,37.5033596],[-122.2446156,37.512279],[-122.2480488,37.5212994],[-122.2634554,37.519087]]],\"spatialReference\":{\"wkid\":4326}}" ,"UTF-8");
+					RestAssured.urlEncodingEnabled = false;
+					
+					RestAssured
+						.given()
+							.pathParam("layer", 4)
+							.pathParam("geometryType", "esriGeometryPolygon")
+							.pathParam("geometry",GeometryEncoded)
+							.pathParam("spatialRel","esriSpatialRelWithin")
+						.when()
+							.log().uri()
+							.get(path)
+						.then()
+							.log().ifError()
+							.statusCode(200)
+							.body("features.size()", is(1))
+							.body("features.attributes.name", hasItems("Holly St"))            ;                                                       
+							;                                                       
 					}
 				
 //=============================================Contains====================================================		
@@ -438,7 +646,7 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			 		
 			    	RestAssured
 			            .given()
-			            	.pathParam("layer", 3)
+			            	.pathParam("layer", 4)
 			            	.pathParam("geometryType", "esriGeometryPolygon")
 			            	.pathParam("geometry",GeometryEncoded)
 			                .pathParam("spatialRel","esrispatialreltouches")
@@ -448,7 +656,9 @@ public class PolygonQueries extends AbstractFeatureServiceTest {
 			            .then()
 			                .log().ifError()
 			                .statusCode(200)
-			                .body("features.size()", is(0))			                ;                                                       
+			                .body("features.size()", is(1))
+							.body("features.attributes.name", hasItems("Hwy 101"))
+			                ;                                                       
 					}					
 				
 				// Reverse test ( Intersecting )

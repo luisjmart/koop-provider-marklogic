@@ -86,7 +86,7 @@
     {
       "id": 3,
       "name" : "GKG level 4",
-      "decription": "GDelt GKG article data at geores 4 (city/landmark)",
+      "decription": "GDelt GKG article data at geores 4 (Polygon)",
       "geometryType": "Polygon",
       "idField": "OBJECTID",
       "displayField": "name",
@@ -105,6 +105,32 @@
       "boundingQuery" : {
         "jsonPropertyValueQuery" : {
           "property" : ["geores"], "value" : [ 4 ],
+          "options" : ["lang=en"], "weight" : 0
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name" : "GKG level 5",
+      "decription": "GDelt GKG article data at geores 4 (Linestring)",
+      "geometryType": "Linestring",
+      "idField": "OBJECTID",
+      "displayField": "name",
+      "geometryPath": "/geometry",
+      "extent" : {
+        "xmin" : -180,
+        "ymin" : -90,
+        "xmax" : 180,
+        "ymax" : 90,
+        "spatialReference" : {
+          "wkid" : 4326,
+          "latestWkid" : 4326
+        }
+      },
+      "view" : "Region",
+      "boundingQuery" : {
+        "jsonPropertyValueQuery" : {
+          "property" : ["geores"], "value" : [ 5 ],
           "options" : ["lang=en"], "weight" : 0
         }
       }
