@@ -3,6 +3,7 @@ import org.junit.*;
 
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
+import java.io.File;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -40,6 +41,37 @@ public abstract class AbstractFeatureServiceTest {
         RestAssured.authentication = basic(user, password);
         RestAssured.urlEncodingEnabled = false; // we encode the URL parameters manually
     }
+
+    public void insertJsonResource(String resource, String uri, String collection) {
+        String path = "/LATEST/documents";
+
+        File file = new File(AbstractFeatureServiceTest.class.getResource("/" + resource).getFile());
+
+        RestAssured
+            .given()
+                .parameter("uri", uri)
+                .parameter("collection", collection)
+                .contentType(ContentType.JSON)
+                .body(file)
+            .when()
+                .put(path)
+            .then()
+                .log().ifError()
+                .statusCode(201)
+            ;
+    }
+
+    public void deleteJsonResource(String uri) {
+        String path = "/LATEST/documents";
+
+        RestAssured
+            .given()
+                .parameter("uri", uri)
+            .when()
+                .delete(path)
+            ;
+    }
+
 
     public static String request2path(String requestFile) {
         return request2path(requestFile, true);
