@@ -12,7 +12,7 @@ const collFeatureServices = 'http://marklogic.com/feature-services';
 function get(context, params) {
   try {
     var response = {};
-    
+
     var serviceName = params.service;
     var model = getServiceModel(serviceName);
 
@@ -84,10 +84,10 @@ function put(context, params, input) {
     }
 
     var layer = createNewLayerObj(
-      layerId, 
-      params.layerName, 
-      params.layerDescription, 
-      params.geometryType, 
+      layerId,
+      params.layerName,
+      params.layerDescription,
+      params.geometryType,
       params.schema,
       params.view
     );
@@ -160,7 +160,7 @@ function createBoundingQuery(structuredQueryJson, qtext, searchOptions) {
       queries.push(query);
     }
   }
-  
+
   if (structuredQueryJson && options) {
     var sQuery = sut.searchFromJson(xdmp.toJSON(structuredQueryJson)).xpath('search:query');
     var ctsQuery = ast.toQuery(sQuery, options);
