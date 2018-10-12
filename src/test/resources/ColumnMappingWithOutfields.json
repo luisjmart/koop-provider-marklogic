@@ -1,0 +1,13 @@
+{
+  "params" : {
+    "id" : "GDeltGKG",
+    "layer" : 4,
+    "method" : "query"
+  },
+  "query" : {
+    "resultRecordCount" : 5,
+    "orderByFields": "name ASC",
+    "outFields" : "OBJECTID,doc_url,pubtime,pubdate,Location",
+    "returnGeometry" : true
+  }
+}
