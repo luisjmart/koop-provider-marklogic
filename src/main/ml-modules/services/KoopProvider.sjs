@@ -373,6 +373,9 @@ function query(req) {
       let aliasFields = layerModel.metadata.fields.filter(f => {
         return outFields[f.alias];
       });
+      Object.keys(aliasFields).forEach((field) => {
+        aliasFields[field].name = aliasFields[field].alias;
+      });
       geojson.metadata.fields = nameFields.concat(aliasFields);
     }
 
