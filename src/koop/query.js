@@ -8,13 +8,6 @@ const log = require('./logger');
 
 function MarkLogicQuery(request) {
   this.conn = JSON.parse(JSON.stringify(config.marklogic.connection));
-  const authorizationHeader = xdmp.getRequestHeader("Authorization");
-  if (authorizationHeader) {
-    const encoded = fn.substringAfter(authorizationHeader, "Basic ");
-    const decoded = xdmp.base64Decode(encoded);
-    const creds = fn.substringBefore(decoded, ":");
-    console.log("User: " + JSON.stringify(creds));
-  }
 
   if (config.marklogic.authenticationForwarding) {
     const authorizationString = extractAndDecodeAuthorizationString(request);
