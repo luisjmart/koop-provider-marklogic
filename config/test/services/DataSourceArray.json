@@ -409,6 +409,45 @@
         }
       ],
       "readOnly": true
+    },
+    {
+      "id": 11,
+      "name" : "GKG level 1",
+      "decription": "GDelt GKG article data at geores 1 (country)",
+      "geometryType": "Point",
+      "idField": "OBJECT_ID",
+      "displayField": "name",
+      "geometryPath": "/geometry",
+      "extent" : {
+        "xmin" : -180,
+        "ymin" : -90,
+        "xmax" : 180,
+        "ymax" : 90,
+        "spatialReference" : {
+          "wkid" : 4326,
+          "latestWkid" : 4326
+        }
+      },
+      "dataSources" : [
+        {
+          "source" : "view",
+          "schema": "GDeltGKG",
+          "view" : "Article"
+        },
+        {
+          "source" : "sparql",
+          "query" : "select ?OBJ_ID ?sparql_url ?DOC_ID WHERE { ?OBJ_ID <http://marklogic.com/objectid> ?sparql_url . ?OBJ_ID <http://marklogic.com/uri> ?DOC_ID }",
+          "fields" : {
+            "OBJ_ID" : { "scalarType" : "long" },
+            "sparql_url" : { "scalarType" : "string" },
+            "DOC_ID" : { "scalarType" : "string" }
+          },
+          "joinOn" : {
+            "joinType" : "union"
+          }
+        }
+      ],
+      "readOnly": true
     }
   ]
 }

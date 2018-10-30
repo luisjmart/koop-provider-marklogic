@@ -861,9 +861,13 @@ function initializePipeline(viewPlan, boundingQuery, layerModel) {
 function addJoinToPipeline(dataSource, viewPlan, pipeline) {
   const dataSourcePlan = getPlanForDataSource(dataSource);
   const joinOn = dataSource.joinOn;
-  pipeline = pipeline.joinInner(
-    dataSourcePlan, op.on(op.col(joinOn.left), op.col(joinOn.right))
-  )
+  if (!joinOn.hasOwnProperty("joinType") || joinOn.joinType === "joinInner") {
+    pipeline = pipeline.joinInner(
+      dataSourcePlan, op.on(op.col(joinOn.left), op.col(joinOn.right))
+    )
+  } else if (joinOn.joinType === "union") {
+    pipeline = pipeline.union(dataSourcePlan)
+  }
   return pipeline;
 }
 
