@@ -15,7 +15,7 @@ buildscript {
             classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.2'
             classpath "com.moowork.gradle:gradle-node-plugin:1.2.0"
             classpath "net.saliman:gradle-properties-plugin:1.4.6"
-            classpath "com.marklogic:ml-gradle:3.3.0"
+            classpath "com.marklogic:ml-gradle:3.12.0"
         }
     }
 }
@@ -24,10 +24,6 @@ apply plugin: 'java'
 apply plugin: 'net.saliman.properties'
 apply plugin: "com.moowork.node"
 apply plugin: "com.marklogic.ml-gradle"
-
-configurations {
-    mlcp
-}
 
 ext {
     mlDeployerAppName = "MarkLogic-Esri-Connector"
@@ -46,9 +42,6 @@ if (project.hasProperty("disconnected") && disconnected) {
     dependencies {
         compile fileTree(dir: "dependencies/buildscript", include: "*.jar")
 
-        mlcp fileTree(dir: "dependencies/mlcp", include: "*.jar")
-        mlcp files("log")
-
         testImplementation fileTree(dir: "dependencies/testImplementation", include: "*.jar")
     }
 }
@@ -66,20 +59,7 @@ else {
         jcenter()
     }
 
-    configurations {
-        mlcp {
-            resolutionStrategy {
-                force "xml-apis:xml-apis:1.4.01"
-            }
-        }
-    }
-
     dependencies {
-        mlcp "com.marklogic:mlcp:9.0.3"
-        mlcp "org.apache.commons:commons-csv:1.2"
-        mlcp "com.marklogic:marklogic-mapreduce2:2.2.3"
-        mlcp files("log")
-
         testImplementation 'junit:junit:4.12'
         testImplementation 'io.rest-assured:rest-assured:3.0.6'
         testImplementation 'io.rest-assured:json-path:3.0.6'
@@ -112,12 +92,6 @@ else {
         into mlDeployerDir + "/dependencies/buildscript"
     }
 
-    task copyMlcpDependencies(type: Copy, group: mlDeployerGroup) {
-        from configurations.mlcp
-        exclude "log4j.properties" // we copy this separately to the log dir
-        into mlDeployerDir + "/dependencies/mlcp"
-    }
-
     task addDisconnectedToGradleProperties {
         doLast {
             ant.propertyfile(file: "build/${mlDeployerAppName}/gradle.properties") {
@@ -132,7 +106,6 @@ else {
         dependsOn = [
             "copyProjectFiles",
             "copyBuildScriptDependencies",
-            "copyMlcpDependencies",
             "addDisconnectedToGradleProperties"
         ]
     }
@@ -162,6 +135,13 @@ ext {
     println "content database: " + contentDatabaseName
     println "schemas database: " + schemasDatabaseName
   }
+
+  dmClient = com.marklogic.client.DatabaseClientFactory.newClient(
+      mlHost, Integer.parseInt(mlRestPort),
+      mlContentDatabaseName,
+      new com.marklogic.client.DatabaseClientFactory.DigestAuthContext( mlUsername, mlPassword),
+      com.marklogic.client.DatabaseClient.ConnectionType.GATEWAY
+  );
 }
 
 test {
@@ -340,25 +320,6 @@ task fsConfigCheck() {
     }
 }
 
-task loadFeatureServicesMLCP(type: com.marklogic.gradle.task.MlcpTask, dependsOn: [ "fsConfigCheck" ]) {
-    doFirst {
-        classpath = configurations.mlcp
-        command = "IMPORT"
-        port = mlAppConfig.restPort
-        database = mlAppConfig.contentDatabaseName
-
-        input_file_path = "config/${fsConfig}/services"
-        input_file_type = "documents"
-        output_collections = "http://marklogic.com/feature-services"
-        output_permissions = project.property("serviceDescriptorPermissions")
-        output_uri_replace = ".*/config/,'/'"
-    }
-
-    doLast {
-        println "Service descriptors loaded"
-    }
-}
-
 task loadFeatureServices(type : com.marklogic.gradle.task.MarkLogicTask, dependsOn: [ "fsConfigCheck" ]) {
     doLast {
       def client = newClient()
@@ -444,39 +405,7 @@ task loadExampleData(dependsOn: [
   "loadZipCodeBoundaryExampleData"
 ])
 
-task loadGDeltExampleDataMLCP(type: com.marklogic.gradle.task.MlcpTask) {
-  classpath = configurations.mlcp
-  command = "IMPORT"
-  port = mlAppConfig.restPort
-  database = mlAppConfig.contentDatabaseName
-  input_file_path = "data/example/gkg_geojson"
-  input_compressed = "true"
-  output_collections = "example-gkg"
-  output_permissions = "rest-reader,read,rest-writer,update"
-  output_uri_replace = ".*/data/example/,'/'"
-}
-
-task unzipGDeltExampleData(type: Copy) { 
-    into file("${buildDir}/unpacked/data/example/gkg_geojson")
-    def files = files(file("data/example/gkg_geojson").listFiles())
-    files.each { zipFile ->
-      println "zipFile: " + zipFile.name
-      from zipTree(zipFile) 
-    } 
-} 
-
-task unzipZipCodeBoundaryExampleData(type: Copy) { 
-    into file("${buildDir}/unpacked/data/example/zipcodes")
-    def files = files(file("data/example/zipcodes").listFiles())
-    files.each { zipFile ->
-      println "zipFile: " + zipFile.name
-      into( zipFile.name) {
-        from zipTree(zipFile) 
-      }
-    } 
-} 
-
-task loadGDeltExampleData(type: com.marklogic.gradle.task.MarkLogicTask, dependsOn: ["unzipGDeltExampleData"]) {
+task loadGDeltExampleData(type: com.marklogic.gradle.task.MarkLogicTask) {
   doLast {
     def client = newClient()
     def dmManager = client.newDataMovementManager();
@@ -501,39 +430,32 @@ task loadGDeltExampleData(type: com.marklogic.gradle.task.MarkLogicTask, depends
     metaHandle.withPermission( "rest-reader", com.marklogic.client.io.DocumentMetadataHandle.Capability.READ)
     metaHandle.withPermission( "rest-writer", com.marklogic.client.io.DocumentMetadataHandle.Capability.UPDATE)
 
-    if (file("${buildDir}/unpacked/data/example/gkg_geojson").exists()) {
-        def dirs = files(file("${buildDir}/unpacked/data/example/gkg_geojson").listFiles())
-        dirs.each { dir ->
-          files(dir.listFiles()).each { file ->
-            println "adding file: /gkg_geojson/${dir.name}/${file.name}"
-            batcher.add( "/gkg_geojson/${dir.name}/${file.name}", metaHandle, new com.marklogic.client.io.FileHandle(file));
-          }
+    if (file("data/example/gkg_geojson").exists()) {
+        def files = files(file("data/example/gkg_geojson").listFiles())
+        files.each { zipFile ->
+          zipTree(zipFile).matching { exclude { FileTreeElement el -> el.directory } }.visit { element ->
+            println "adding file: /gkg_geojson/${zipFile.name}/${element.relativePath}"
+            batcher.add( "/gkg_geojson/${zipFile.name}/${element.relativePath}", metaHandle, new com.marklogic.client.io.FileHandle(element.file));
+          } 
         }
     }
     
     batcher.flushAndWait();
     dmManager.stopJob(ticket);
+    dmManager.release();
 
     println "GDeltExampleData loaded"
+
+    def report = dmManager.getJobReport(ticket);
+
+    println "SuccessBatches: " + report.getSuccessBatchesCount()
+    println "SuccessEvents: " + report.getSuccessEventsCount()
+    println "FailureBatches: " + report.getFailureBatchesCount()
+    println "FailureEvents: " + report.getFailureEventsCount()
   }
 }
 
-task loadZipCodeBoundaryExampleDataMLCP(type: com.marklogic.gradle.task.MlcpTask) {
-  classpath = configurations.mlcp
-  command = "IMPORT"
-  port = mlAppConfig.restPort
-  database = mlAppConfig.contentDatabaseName
-  input_file_path = "data/example/zipcodes"
-  transform_module = "/transform/wrap-geojson.sjs"
-  input_compressed = "true"
-  batch_size = 1
-  transaction_size = 1
-  output_collections = "zipcodes,test-data"
-  output_permissions = "rest-reader,read,rest-writer,update"
-  output_uri_replace = ".*/data/example/,'/'"
-}
-
-task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MarkLogicTask, dependsOn: ["unzipZipCodeBoundaryExampleData"]) {
+task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MarkLogicTask) {
   doLast {
     def client = newClient()
     def dmManager = client.newDataMovementManager();
@@ -558,20 +480,28 @@ task loadZipCodeBoundaryExampleData(type: com.marklogic.gradle.task.MarkLogicTas
     metaHandle.withPermission( "rest-reader", com.marklogic.client.io.DocumentMetadataHandle.Capability.READ)
     metaHandle.withPermission( "rest-writer", com.marklogic.client.io.DocumentMetadataHandle.Capability.UPDATE)
 
-    if (file("${buildDir}/unpacked/data/example/zipcodes").exists()) {
-        def dirs = files(file("${buildDir}/unpacked/data/example/zipcodes").listFiles())
-        dirs.each { dir ->
-          files(dir.listFiles()).each { file ->
-            println "adding file: /zipcodes/${dir.name}/${file.name}"
-            batcher.add( "/zipcodes/${dir.name}/${file.name}", metaHandle, new com.marklogic.client.io.FileHandle(file));
-          }
+    if (file("data/example/zipcodes").exists()) {
+        def files = files(file("data/example/zipcodes").listFiles())
+        files.each { zipFile ->
+          zipTree(zipFile).matching { exclude { FileTreeElement el -> el.directory } }.visit { element ->
+            println "adding file: /zipcodes/${zipFile.name}/${element.relativePath}"
+            batcher.add( "/zipcodes/${zipFile.name}/${element.relativePath}", metaHandle, new com.marklogic.client.io.FileHandle(element.file));
+          } 
         }
     }
     
     batcher.flushAndWait();
     dmManager.stopJob(ticket);
+    dmManager.release();
 
     println "ZipCodeBoundaryExampleData loaded"
+
+    def report = dmManager.getJobReport(ticket);
+
+    println "SuccessBatches: " + report.getSuccessBatchesCount()
+    println "SuccessEvents: " + report.getSuccessEventsCount()
+    println "FailureBatches: " + report.getFailureBatchesCount()
+    println "FailureEvents: " + report.getFailureEventsCount()
   }
 }
 
@@ -581,28 +511,115 @@ task loadTestData(dependsOn: [
   "loadGeoLocationTestData"
 ])
 
-task loadGDeltTestData(type: com.marklogic.gradle.task.MlcpTask) {
-  classpath = configurations.mlcp
-  command = "IMPORT"
-  port = mlAppConfig.restPort
-  database = mlAppConfig.contentDatabaseName
-  input_file_path = "data/test/gkg_geojson"
-  input_compressed = "true"
-  output_collections = "example-gkg,test-data"
-  output_permissions = "rest-reader,read,rest-writer,update"
-  output_uri_replace = ".*/data/test/,'/'"
+task loadGDeltTestData(type: com.marklogic.gradle.task.MarkLogicTask) {
+  doLast {
+    def client = newClient()
+    def dmManager = client.newDataMovementManager();
+    def batcher = 
+      dmManager.newWriteBatcher()
+        .withBatchSize(100)
+        .withThreadCount(20)
+        .onBatchSuccess( new com.marklogic.client.datamovement.WriteBatchListener() {
+            void processEvent( com.marklogic.client.datamovement.WriteBatch batch) {
+              println "batch # "+batch.getJobBatchNumber()+", so far: " + batch.getJobWritesSoFar();
+            };
+        })
+        .onBatchFailure( new com.marklogic.client.datamovement.WriteFailureListener() {
+            void processFailure( com.marklogic.client.datamovement.WriteBatch batch, java.lang.Throwable failure) {
+              failure.printStackTrace();
+            }
+        });
+    def ticket = dmManager.startJob(batcher);
+
+    def metaHandle = new com.marklogic.client.io.DocumentMetadataHandle()
+    metaHandle.withCollections("example-gkg","test-data")
+    metaHandle.withPermission( "rest-reader", com.marklogic.client.io.DocumentMetadataHandle.Capability.READ)
+    metaHandle.withPermission( "rest-writer", com.marklogic.client.io.DocumentMetadataHandle.Capability.UPDATE)
+
+    if (file("data/test/gkg_geojson").exists()) {
+        def files = files(file("data/test/gkg_geojson").listFiles())
+        files.each { zipFile ->
+          zipTree(zipFile).matching { exclude { FileTreeElement el -> el.directory } }.visit { element ->
+            println "adding file: /gkg_geojson/${zipFile.name}/${element.relativePath}"
+            batcher.add( "/gkg_geojson/${zipFile.name}/${element.relativePath}", metaHandle, new com.marklogic.client.io.FileHandle(element.file));
+          } 
+        }
+    }
+    
+    batcher.flushAndWait();
+    dmManager.stopJob(ticket);
+    dmManager.release();
+
+    println "GDeltTestData loaded"
+
+    def report = dmManager.getJobReport(ticket);
+
+    println "SuccessBatches: " + report.getSuccessBatchesCount()
+    println "SuccessEvents: " + report.getSuccessEventsCount()
+    println "FailureBatches: " + report.getFailureBatchesCount()
+    println "FailureEvents: " + report.getFailureEventsCount()
+  }
 }
 
-task loadGeoLocationTestData(type: com.marklogic.gradle.task.MlcpTask) {
-  classpath = configurations.mlcp
-  command = "IMPORT"
-  port = mlAppConfig.restPort
-  database = mlAppConfig.contentDatabaseName
-  input_file_path = "data/test/GeoLocation"
-  input_compressed = "true"
-  output_collections = "example-geo,test-data"
-  output_permissions = "rest-reader,read,rest-writer,update"
-  output_uri_replace = ".*/data/test/,'/'"
+task listFiles () {
+  doLast {
+    def files = files(file("data/test/gkg_geojson").listFiles())
+    files.each { zipFile ->
+      zipTree(zipFile).matching { exclude { FileTreeElement el -> el.directory } }.visit { element ->
+        println zipFile.name + " " + element.relativePath
+      } 
+    }
+  }
+}
+
+task loadGeoLocationTestData(type: com.marklogic.gradle.task.MarkLogicTask) {
+  doLast {
+    def client = newClient()
+    def dmManager = client.newDataMovementManager();
+    def batcher = 
+      dmManager.newWriteBatcher()
+        .withBatchSize(100)
+        .withThreadCount(20)
+        .onBatchSuccess( new com.marklogic.client.datamovement.WriteBatchListener() {
+            void processEvent( com.marklogic.client.datamovement.WriteBatch batch) {
+              println "batch # "+batch.getJobBatchNumber()+", so far: " + batch.getJobWritesSoFar();
+            };
+        })
+        .onBatchFailure( new com.marklogic.client.datamovement.WriteFailureListener() {
+            void processFailure( com.marklogic.client.datamovement.WriteBatch batch, java.lang.Throwable failure) {
+              failure.printStackTrace();
+            }
+        });
+    def ticket = dmManager.startJob(batcher);
+
+    def metaHandle = new com.marklogic.client.io.DocumentMetadataHandle()
+    metaHandle.withCollections("example-geo","test-data")
+    metaHandle.withPermission( "rest-reader", com.marklogic.client.io.DocumentMetadataHandle.Capability.READ)
+    metaHandle.withPermission( "rest-writer", com.marklogic.client.io.DocumentMetadataHandle.Capability.UPDATE)
+
+    if (file("data/test/GeoLocation").exists()) {
+        def files = files(file("data/test/GeoLocation").listFiles())
+        files.each { zipFile ->
+          zipTree(zipFile).matching { exclude { FileTreeElement el -> el.directory } }.visit { element ->
+            println "adding file: /GeoLocation/${zipFile.name}/${element.relativePath}"
+            batcher.add( "/GeoLocation/${zipFile.name}/${element.relativePath}", metaHandle, new com.marklogic.client.io.FileHandle(element.file));
+          } 
+        }
+    }
+    
+    batcher.flushAndWait();
+    dmManager.stopJob(ticket);
+    dmManager.release();
+
+    println "GeoLocationTestData loaded"
+
+    def report = dmManager.getJobReport(ticket);
+
+    println "SuccessBatches: " + report.getSuccessBatchesCount()
+    println "SuccessEvents: " + report.getSuccessEventsCount()
+    println "FailureBatches: " + report.getFailureBatchesCount()
+    println "FailureEvents: " + report.getFailureEventsCount()
+  }
 }
 
 import groovyx.net.http.HTTPBuilder
